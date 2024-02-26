@@ -1,6 +1,13 @@
-import { CronJob } from 'cron';
 import { CronService } from './cron/cron-service';
 import { CheckService } from '../domain/use-cases/checks/check-service';
+import { LogRepositoryImplementation } from '../infrastructure/repositories/log.repository-implementation';
+import { FileSystemDataSourceImplementation } from '../infrastructure/datasources/file-system.datasource-implementation';
+
+const fileSystemLogRepository = new LogRepositoryImplementation(
+    new FileSystemDataSourceImplementation()
+    //new PostgreSQLDataSourceImplementation
+    //new MongoDBDataSourceImplementation
+);
 
 export class ServerApp {
 
@@ -23,9 +30,10 @@ export class ServerApp {
             //FUNCIÓN QUE DEFINE LO QUE HACE CADA ESE TIEMPO
             () => {
                 const url = 'https://google.com';
-                const checkService = new CheckService(
-                    () => console.log('Success: '+url),
-                    (error) => console.log(error)
+                new CheckService(
+                    fileSystemLogRepository,            //DATASOURCE
+                    () => console.log('Success: '+url), //CALLBACKSUCCESS
+                    (error) => console.log(error)       //CALLBACKERROR
                 ).execute(url)
 
                 //console.log(checkService);
