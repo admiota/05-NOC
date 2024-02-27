@@ -7,7 +7,7 @@ interface CheckServiceUseCase{
 
 type SuccessCallback = (() => void) | undefined;
 type ErrorCallback = ((error:string) => void) | undefined;
-
+const originFile = 'check-service.ts';
 export class CheckService implements CheckServiceUseCase{
     constructor(
         private readonly logRepository: LogRepository,
@@ -19,17 +19,26 @@ export class CheckService implements CheckServiceUseCase{
 
     public async execute(url:string):Promise<boolean> {
         try {
+            
             const req = await fetch(url);
             if (!req.ok) {
                 throw new Error(`ERROR EN LA REQUEST ${url}`);
             }
-            const log = new LogEntity(`Service ${url} working`, LogSeverityLevel.low);
+            const log = new LogEntity({
+                message: `Service ${url} working`,
+                level: LogSeverityLevel.low,
+                origin: originFile
+            });
             this.logRepository.saveLog(log);
             this.successCallback && this.successCallback();
             return true;
         } catch (error) {
             const errorMessage = `${url} is not ok: ${error}`;
-            const log = new LogEntity(errorMessage, LogSeverityLevel.high);
+            const log = new LogEntity({
+                message: errorMessage,
+                level: LogSeverityLevel.high,
+                origin: originFile
+            });
             this.logRepository.saveLog(log);
             this.errorCallback && this.errorCallback(errorMessage);
             
