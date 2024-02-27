@@ -4,17 +4,23 @@ import { LogRepositoryImplementation } from '../infrastructure/repositories/log.
 import { FileSystemDataSourceImplementation } from '../infrastructure/datasources/file-system.datasource-implementation';
 import { EmailService } from './email/email-service';
 import { SendEmailLogs } from '../domain/use-cases/email/send-email-logs';
+import { MongoDatasource } from '../infrastructure/datasources/mongo.datasource-implementation';
+import { LogModel } from '../data/mongo';
+import { LogSeverityLevel } from '../domain/entities/log.entity';
 
-const fileSystemLogRepository = new LogRepositoryImplementation(
-    new FileSystemDataSourceImplementation()
-    //new PostgreSQLDataSourceImplementation
+const logRepository = new LogRepositoryImplementation(
+    //new FileSystemDataSourceImplementation()
+    new MongoDatasource()
     //new MongoDBDataSourceImplementation
 );
+
+/*const mongoLogRepository = new LogRepositoryImplementation(   
+);*/
 const emailService = new EmailService();
 
 export class ServerApp {
 
-    public static start() {
+    public static async start() {
         console.log('Server started...');
         
         
@@ -40,22 +46,23 @@ export class ServerApp {
         /*const emailService = new EmailService();
         const toSend = ['isabel.pizcer@gmail.com','adolfomiota1@gmail.com'];
         emailService.sendFileWithFileSystemLogs(toSend);*/
+        const logs = await logRepository.getLogs(LogSeverityLevel.low);
+        console.log(logs)
+        //  CronService.createJob(
+        //      //TIEMPO
+        //      '*/5 * * * * *',
+        //      //FUNCIÓN QUE DEFINE LO QUE HACE CADA ESE TIEMPO
+        //      () => {
+        //          const url = 'https://google.com';
+        //          new CheckService(
+        //              logRepository,            //DATASOURCE
+        //              () => console.log('Success: '+url), //CALLBACKSUCCESS
+        //              (error) => console.log(error)       //CALLBACKERROR
+        //          ).execute(url)
 
-         CronService.createJob(
-             //TIEMPO
-             '*/5 * * * * *',
-             //FUNCIÓN QUE DEFINE LO QUE HACE CADA ESE TIEMPO
-             () => {
-                 const url = 'https://google.com';
-                 new CheckService(
-                     fileSystemLogRepository,            //DATASOURCE
-                     () => console.log('Success: '+url), //CALLBACKSUCCESS
-                     (error) => console.log(error)       //CALLBACKERROR
-                 ).execute(url)
-
-            //         //console.log(checkService);
-             }
-         );
+        //     //         //console.log(checkService);
+        //      }
+        //  );
     }
 
 
