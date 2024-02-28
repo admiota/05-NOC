@@ -25,7 +25,28 @@ POSTGRES_USER=
 POSTGRES_PASSWORD=
 ```
 
-3. Ejecutar el comando `npm install `
+3. Ejecutar el comando
+
+```
+npm install
+```
+
 4. Levantar las bases de datos con el comando
-   `docker compose up -d`
-5. Ejecutar `npm run dev`
+
+```
+docker compose up -d
+```
+
+5. Ejecutar el comando
+
+```
+npx prisma migrate dev
+```
+
+6. Ejecutar
+
+```
+npm run dev
+```
+
+## Obtener Gmail Key
