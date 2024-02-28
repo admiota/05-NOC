@@ -3,15 +3,20 @@ import { CheckService } from '../domain/use-cases/checks/check-service';
 import { LogRepositoryImplementation } from '../infrastructure/repositories/log.repository-implementation';
 import { FileSystemDataSourceImplementation } from '../infrastructure/datasources/file-system.datasource-implementation';
 import { EmailService } from './email/email-service';
-import { SendEmailLogs } from '../domain/use-cases/email/send-email-logs';
 import { MongoDatasource } from '../infrastructure/datasources/mongo.datasource-implementation';
-import { LogModel } from '../data/mongo';
-import { LogSeverityLevel } from '../domain/entities/log.entity';
+import { PostgresLogDatasource } from '../infrastructure/datasources/postgres-log.datasource-implementation';
 
-const logRepository = new LogRepositoryImplementation(
-    //new FileSystemDataSourceImplementation()
+const logRepositoryFileSystem = new LogRepositoryImplementation(
+    new FileSystemDataSourceImplementation()
+    //new MongoDatasource()
+    //new PostgresLogDatasource()
+);
+const logRepositoryMongo = new LogRepositoryImplementation(
     new MongoDatasource()
-    //new MongoDBDataSourceImplementation
+);
+
+const logRepositoryPostgres = new LogRepositoryImplementation(
+    new PostgresLogDatasource()
 );
 
 /*const mongoLogRepository = new LogRepositoryImplementation(   
@@ -46,23 +51,39 @@ export class ServerApp {
         /*const emailService = new EmailService();
         const toSend = ['isabel.pizcer@gmail.com','adolfomiota1@gmail.com'];
         emailService.sendFileWithFileSystemLogs(toSend);*/
-        const logs = await logRepository.getLogs(LogSeverityLevel.low);
-        console.log(logs)
-        //  CronService.createJob(
-        //      //TIEMPO
-        //      '*/5 * * * * *',
-        //      //FUNCIÓN QUE DEFINE LO QUE HACE CADA ESE TIEMPO
-        //      () => {
-        //          const url = 'https://google.com';
-        //          new CheckService(
-        //              logRepository,            //DATASOURCE
-        //              () => console.log('Success: '+url), //CALLBACKSUCCESS
-        //              (error) => console.log(error)       //CALLBACKERROR
-        //          ).execute(url)
+        //const logs = await logRepository.getLogs(LogSeverityLevel.high);
+        //console.log(logs)
+            CronService.createJob(
+               //TIEMPO
+               '*/5 * * * * *',
+               //FUNCIÓN QUE DEFINE LO QUE HACE CADA ESE TIEMPO
+               () => {
+                   const url = 'https://google23.com';
+                   new CheckServiceMultiple(
+                       [logRepositoryFileSystem, logRepositoryPostgres],//DATASOURCE
+                       () => console.log('Success: '+url), //CALLBACKSUCCESS
+                       (error) => console.log(error)       //CALLBACKERROR
+                   ).execute(url)
 
-        //     //         //console.log(checkService);
-        //      }
-        //  );
+                   //console.log(checkService);
+               }
+            );
+
+        // CronService.createJob(
+        //       //TIEMPO
+        //       '*/5 * * * * *',
+        //       //FUNCIÓN QUE DEFINE LO QUE HACE CADA ESE TIEMPO
+        //       () => {
+        //           const url = 'https://google.com';
+        //           new CheckService(
+        //               logRepositoryMongo,                       //DATASOURCE
+        //               () => console.log('Success: '+url), //CALLBACKSUCCESS
+        //               (error) => console.log(error)       //CALLBACKERROR
+        //           ).execute(url)
+
+        //          //console.log(checkService);
+        //       }
+        // );
     }
 
 

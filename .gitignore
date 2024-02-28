@@ -13,3 +13,5 @@ logs/
 mongo/
 
 postgres/
+
+prisma/
