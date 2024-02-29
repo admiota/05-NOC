@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
-import { envs } from '../../config/plugins/envs.plugin';
 import { LogRepository } from '../../domain/repository/log.repository';
 import { LogEntity, LogSeverityLevel } from '../../domain/entities/log.entity';
+import { envs } from '../../config/plugins/envs.plugin';
 
 interface SendEmailOptions{
     to: string | string[],
@@ -41,7 +41,7 @@ export class EmailService{
         }
     }
 
-    async sendFileWithFileSystemLogs(toSend:string | string[]) {
+    async sendEmailWithFileSystemLogs(toSend:string | string[]) {
         try {
             const to = toSend;
             const subject = 'Logs del servidor';

@@ -17,7 +17,7 @@ export class SendEmailLogs implements SendLogEmailUseCase{
 
     async execute(to: string | string[]) {
         try {
-            const sent = await this.emailService.sendFileWithFileSystemLogs(to);
+            const sent = await this.emailService.sendEmailWithFileSystemLogs(to);
             if (!sent) throw new Error('Error al enviar email');
             const log = new LogEntity({
                 message: `Email sent to ${to}`,

@@ -19,7 +19,6 @@ export class CheckService implements CheckServiceUseCase{
 
     public async execute(url:string):Promise<boolean> {
         try {
-            
             const req = await fetch(url);
             if (!req.ok) {
                 throw new Error(`ERROR EN LA REQUEST ${url}`);
